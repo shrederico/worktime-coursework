@@ -1,0 +1,22 @@
+{
+  "status": "passed",
+  "url": "https://github.com/shrederico/worktime-coursework/actions/runs/41310770497",
+  "commit": "7642a8e2db39a27886c28c5db2c8665fd9947da0",
+  "image": "ghcr.io/shrederico/worktime-coursework:7642a8e2db39a27886c28c5db2c8665fd9947da0",
+  "jobs": [
+    {
+      "name": "test",
+      "conclusion": "success"
+    },
+    {
+      "name": "build",
+      "conclusion": "success"
+    },
+    {
+      "name": "deploy",
+      "conclusion": "success"
+    }
+  ],
+  "running_replicas": 2,
+  "health": "ok"
+}

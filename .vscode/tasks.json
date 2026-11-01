@@ -1,6 +1,7 @@
 {
   "version": "2.0.0",
   "tasks": [
+    {"label": "GitHub: включить runner после перезапуска Mac", "type": "shell", "command": "sh scripts/github_runner.sh", "problemMatcher": [], "presentation": {"reveal": "always", "panel": "dedicated"}},
     {"label": "Swarm: запустить и проверить учебный кластер", "type": "shell", "command": "python3 scripts/swarm_lab.py", "problemMatcher": []},
     {"label": "Swarm: собрать, проверить и доставить обновление", "type": "shell", "command": "python3 scripts/local_pipeline.py", "problemMatcher": []},
     {"label": "Kubernetes: запустить учебный кластер", "type": "shell", "command": "bash scripts/kubernetes_lab.sh", "problemMatcher": []},
