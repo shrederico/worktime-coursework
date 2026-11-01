@@ -1,0 +1,10 @@
+.venv
+.git
+.env
+.local-secrets
+*.sqlite3
+__pycache__
+backups
+docs
+staticfiles
+.lab

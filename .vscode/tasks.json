@@ -1,0 +1,12 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {"label": "Swarm: запустить и проверить учебный кластер", "type": "shell", "command": "python3 scripts/swarm_lab.py", "problemMatcher": []},
+    {"label": "Swarm: собрать, проверить и доставить обновление", "type": "shell", "command": "python3 scripts/local_pipeline.py", "problemMatcher": []},
+    {"label": "Kubernetes: запустить учебный кластер", "type": "shell", "command": "bash scripts/kubernetes_lab.sh", "problemMatcher": []},
+    {"label": "Kubernetes: проверить восстановление", "type": "shell", "command": "python3 scripts/verify_kubernetes.py", "problemMatcher": []},
+    {"label": "Запустить платформу Docker", "type": "shell", "command": "sh scripts/start.sh", "problemMatcher": [], "presentation": {"reveal": "always", "panel": "dedicated"}},
+    {"label": "Остановить платформу без удаления данных", "type": "shell", "command": "docker compose stop", "problemMatcher": []},
+    {"label": "Локальный запуск без Docker", "type": "shell", "command": "sh scripts/local.sh", "problemMatcher": [], "presentation": {"reveal": "always", "panel": "dedicated"}}
+  ]
+}

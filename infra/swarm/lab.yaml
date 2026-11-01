@@ -1,0 +1,24 @@
+name: worktime-swarm-lab
+services:
+  manager:
+    image: docker:29-dind
+    privileged: true
+    entrypoint: [dockerd]
+    command: [--host=unix:///var/run/docker.sock, --storage-driver=overlay2]
+    environment: {DOCKER_HOST: 'unix:///var/run/docker.sock', DOCKER_TLS_CERTDIR: ''}
+    ports: ['127.0.0.1:8081:8080', '127.0.0.1:3001:3000']
+    volumes: ['manager_data:/var/lib/docker']
+    networks: [nodes]
+  worker:
+    image: docker:29-dind
+    privileged: true
+    entrypoint: [dockerd]
+    command: [--host=unix:///var/run/docker.sock, --storage-driver=overlay2]
+    environment: {DOCKER_HOST: 'unix:///var/run/docker.sock', DOCKER_TLS_CERTDIR: ''}
+    volumes: ['worker_data:/var/lib/docker']
+    networks: [nodes]
+networks:
+  nodes:
+volumes:
+  manager_data:
+  worker_data:

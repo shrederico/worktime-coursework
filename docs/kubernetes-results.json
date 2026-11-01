@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "nodes": "NAME                     STATUS   ROLES           AGE     VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE                       KERNEL-VERSION            CONTAINER-RUNTIME\nworktime-control-plane   Ready    control-plane   4m17s   v1.37.0   172.26.0.2    <none>        Debian GNU/Linux 13 (trixie)   7.0.12-linuxkit (arm64)   containerd://2.3.4\nworktime-worker          Ready    <none>          4m3s    v1.37.0   172.26.0.4    <none>        Debian GNU/Linux 13 (trixie)   7.0.12-linuxkit (arm64)   containerd://2.3.4\nworktime-worker2         Ready    <none>          4m3s    v1.37.0   172.26.0.3    <none>        Debian GNU/Linux 13 (trixie)   7.0.12-linuxkit (arm64)   containerd://2.3.4",
+  "pods": "NAME                          READY   STATUS      RESTARTS   AGE     IP           NODE               NOMINATED NODE   READINESS GATES\napp-6b5579b998-22vlb          1/1     Running     0          13s     10.244.1.9   worktime-worker2   <none>           <none>\napp-6b5579b998-xwvm9          1/1     Running     0          52s     10.244.2.9   worktime-worker    <none>           <none>\ndb-75c69fbb75-fszxn           1/1     Running     0          2m15s   10.244.2.5   worktime-worker    <none>           <none>\ngrafana-5485b477fd-2sqfd      1/1     Running     0          117s    10.244.1.7   worktime-worker2   <none>           <none>\nmigrate-67kbc                 0/1     Completed   0          2m      10.244.1.5   worktime-worker2   <none>           <none>\nprometheus-7bc6495c6b-q56l7   1/1     Running     0          117s    10.244.2.7   worktime-worker    <none>           <none>\nproxy-5598675d44-qv4h5        1/1     Running     0          117s    10.244.2.6   worktime-worker    <none>           <none>",
+  "deleted_pod": "app-6b5579b998-mmb9q",
+  "replacement_pods": [
+    "app-6b5579b998-22vlb",
+    "app-6b5579b998-xwvm9"
+  ],
+  "network": "Nginx → Django → PostgreSQL: health ok",
+  "limitation": "Логические узлы на одном Mac, единственная база без репликации"
+}

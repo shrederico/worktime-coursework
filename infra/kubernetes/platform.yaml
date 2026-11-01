@@ -1,0 +1,167 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: {name: postgres-data, namespace: worktime}
+spec:
+  accessModes: [ReadWriteOnce]
+  resources: {requests: {storage: 1Gi}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: db, namespace: worktime}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}
+  selector: {matchLabels: {app: db}}
+  template:
+    metadata: {labels: {app: db}}
+    spec:
+      containers:
+        - name: db
+          image: postgres:17-alpine
+          envFrom: [{secretRef: {name: worktime-env}}]
+          env: [{name: PGDATA, value: /var/lib/postgresql/data/pgdata}]
+          ports: [{containerPort: 5432}]
+          volumeMounts: [{name: data, mountPath: /var/lib/postgresql/data}]
+          readinessProbe:
+            exec: {command: [sh, -c, 'pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"']}
+            initialDelaySeconds: 5
+          resources:
+            requests: {cpu: 100m, memory: 128Mi}
+            limits: {memory: 512Mi}
+      volumes: [{name: data, persistentVolumeClaim: {claimName: postgres-data}}]
+---
+apiVersion: v1
+kind: Service
+metadata: {name: db, namespace: worktime}
+spec:
+  selector: {app: db}
+  ports: [{port: 5432, targetPort: 5432}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: app, namespace: worktime}
+spec:
+  replicas: 2
+  selector: {matchLabels: {app: app}}
+  template:
+    metadata: {labels: {app: app}}
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector: {matchLabels: {app: app}}
+                topologyKey: kubernetes.io/hostname
+      containers:
+        - name: app
+          image: worktime:local
+          imagePullPolicy: IfNotPresent
+          envFrom: [{secretRef: {name: worktime-env}}]
+          env: [{name: DB_HOST, value: db}]
+          ports: [{containerPort: 8000}]
+          readinessProbe:
+            httpGet:
+              path: /health/
+              port: 8000
+              httpHeaders: [{name: Host, value: localhost}]
+            initialDelaySeconds: 5
+          livenessProbe:
+            tcpSocket: {port: 8000}
+            initialDelaySeconds: 20
+            periodSeconds: 15
+          resources:
+            requests: {cpu: 100m, memory: 128Mi}
+            limits: {memory: 512Mi}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: app, namespace: worktime}
+spec:
+  selector: {app: app}
+  ports: [{port: 8000, targetPort: 8000}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: proxy, namespace: worktime}
+spec:
+  selector: {matchLabels: {app: proxy}}
+  template:
+    metadata: {labels: {app: proxy}}
+    spec:
+      containers:
+        - name: proxy
+          image: nginx:1.28-alpine
+          ports: [{containerPort: 80}]
+          volumeMounts: [{name: config, mountPath: /etc/nginx/conf.d}]
+          resources:
+            requests: {cpu: 50m, memory: 32Mi}
+            limits: {memory: 128Mi}
+      volumes: [{name: config, configMap: {name: nginx}}]
+---
+apiVersion: v1
+kind: Service
+metadata: {name: proxy, namespace: worktime}
+spec:
+  selector: {app: proxy}
+  ports: [{port: 80, targetPort: 80}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: prometheus, namespace: worktime}
+spec:
+  selector: {matchLabels: {app: prometheus}}
+  template:
+    metadata: {labels: {app: prometheus}}
+    spec:
+      containers:
+        - name: prometheus
+          image: prom/prometheus:v3.5.0
+          ports: [{containerPort: 9090}]
+          volumeMounts: [{name: config, mountPath: /etc/prometheus}, {name: data, mountPath: /prometheus}]
+          resources:
+            requests: {cpu: 100m, memory: 128Mi}
+            limits: {memory: 512Mi}
+      volumes: [{name: config, configMap: {name: prometheus}}, {name: data, emptyDir: {}}]
+---
+apiVersion: v1
+kind: Service
+metadata: {name: prometheus, namespace: worktime}
+spec:
+  selector: {app: prometheus}
+  ports: [{port: 9090, targetPort: 9090}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: grafana, namespace: worktime}
+spec:
+  selector: {matchLabels: {app: grafana}}
+  template:
+    metadata: {labels: {app: grafana}}
+    spec:
+      containers:
+        - name: grafana
+          image: grafana/grafana:12.1.1
+          env:
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom: {secretKeyRef: {name: worktime-env, key: GRAFANA_PASSWORD}}
+            - {name: GF_USERS_ALLOW_SIGN_UP, value: 'false'}
+          ports: [{containerPort: 3000}]
+          volumeMounts:
+            - {name: datasource, mountPath: /etc/grafana/provisioning/datasources}
+            - {name: provider, mountPath: /etc/grafana/provisioning/dashboards}
+            - {name: dashboard, mountPath: /var/lib/grafana/dashboards}
+          resources:
+            requests: {cpu: 100m, memory: 128Mi}
+            limits: {memory: 512Mi}
+      volumes:
+        - {name: datasource, configMap: {name: grafana-datasource}}
+        - {name: provider, configMap: {name: grafana-provider}}
+        - {name: dashboard, configMap: {name: grafana-dashboard}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: grafana, namespace: worktime}
+spec:
+  selector: {app: grafana}
+  ports: [{port: 3000, targetPort: 3000}]

@@ -1,0 +1,11 @@
+.venv/
+.env
+.local-secrets
+*.sqlite3
+__pycache__/
+staticfiles/
+backups/
+.DS_Store
+.idea/
+*.log
+.lab/

@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "finished_at": "2026-11-01T13:12:03.877375+00:00",
+  "trigger": "manual local run",
+  "previous_image": "worktime:build-20261101130620",
+  "image": "worktime:build-20261101131044",
+  "stages": [
+    "build",
+    "15 tests with PostgreSQL",
+    "load to both nodes",
+    "rolling update",
+    "health"
+  ],
+  "tasks": "ID             NAME             IMAGE                           NODE           DESIRED STATE   CURRENT STATE            ERROR     PORTS\nr7efpk8uyngc   worktime_app.1   worktime:build-20261101131044   009a69f46407   Running         Running 51 seconds ago             \nwtu4o6md3q2n   worktime_app.2   worktime:build-20261101131044   af0a39d60304   Running         Running 31 seconds ago"
+}
