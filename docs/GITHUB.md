@@ -1,6 +1,6 @@
 # GitHub и автоматическое обновление
 
-Закрытый репозиторий: https://github.com/shrederico/worktime-coursework.
+Репозиторий: https://github.com/shrederico/worktime-coursework.
 Runner worktime-mac зарегистрирован только в этом репозитории, метки macOS,
 ARM64 и worktime. Файлы runner находятся в .lab/runner и исключены из Git.
 Системная служба и автоматический запуск при входе в macOS не устанавливались.
